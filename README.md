@@ -25,7 +25,7 @@
         - network coverage
         - positioning in high mountains (GLSS)
 
-5. Legal claims
+5. Legal Claims
     - data collection in nepal
     - data storage in germany
     - GPS privacy
