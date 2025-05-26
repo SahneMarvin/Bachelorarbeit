@@ -1,0 +1,66 @@
+\documentclass{tubaf-thesis}
+\usepackage[sans]{tubaf-fonts}
+\usepackage{graphicx}
+\usepackage{blindtext}
+\usepackage[english]{babel}
+\usepackage{tabularray}
+\UseTblrLibrary{booktabs}
+\usepackage[style=numeric, backend=biber, sorting=none]{biblatex}
+\addbibresource{refs.bib}
+
+% Document
+\begin{document}
+    \title{Design and Development of a Mobile Application for Citizen Science-Based Landslide Oberservation and Data Collection}
+    \author{Marvin Menzel}
+    \date{\today}
+
+
+    \supervisors{Prof. Dr. S. Zug \and Cornelia Kitzig}
+    %
+
+    \examiners{Prof. N. Naseweis \and Dr. S. Schlauer}
+    \course{Angewandte Informatik}
+
+    \logo{\includegraphics{innovative-hochschule}} % Logo of Institute, Project etc.
+
+    \maketitle
+
+    \tableofcontents
+    
+    \chapter{Introduction}
+    \chapter{Related Work}
+    	\section{Mobile applications for data collection}
+    	\section{Technical aspects of data synchronization}
+    \chapter{System Specifications}
+    	\section{Hardware}
+    		\subsection{Sensors}
+    		\subsection{Storage}
+    		\subsection{Energy}
+    	\section{Sofware}
+    		\subsection{Operating Systems}
+    		\subsection{User Interface {\&} Experience}
+    	\section{Constraints and considarations}
+    		\subsection{Network Coverage}
+    		\subsection{Localization}
+    		\subsection{Timestamps}
+    \chapter{Implementation}
+    	\section{Core Features}
+    	\section{Data upload}
+    	\section{Challenges}
+    \chapter{Evaluation}
+    	\section{Tests}
+    		\subsection{Funcionality}
+    		\subsection{User Experience and Usability}
+    \chapter{Discussion}
+    	\section{Process}
+    	\section{Ethical and Data Privacy aspects}
+    \chapter{Conclusion {\&} Outlook}
+    	\section{Summary}
+    	\section{Future Work}
+
+    \makedeclarationofauthorship
+
+    \nocite{*} % include all entries in the bibliography for testing
+    \printbibliography
+
+\end{document}
