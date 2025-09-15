@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.4.23)  25 MAY 2025 12:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.4.23)  23 AUG 2025 12:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1174,57 +1174,98 @@ Package scrlayer-scrpage Warning: \footheight to low.
 ]
 chapter 1.
 
+LaTeX Warning: Citation 'fidan_understanding_2024' on page 3 undefined on input
+ line 46.
+
+
 
 [3
 
 ]
 chapter 2.
 
+LaTeX Warning: Citation 'pernat_citizen_2021' on page 4 undefined on input line
+ 54.
+
+
+LaTeX Warning: Citation 'whang_data_2020' on page 4 undefined on input line 58.
+
+
+
 
 [4
 
 ]
+
+LaTeX Warning: Citation 'haklay_neogeography_2013' on page 5 undefined on input
+ line 62.
+
+
+LaTeX Warning: Citation 'haklay_what_2021' on page 5 undefined on input line 62
+.
+
+
+Overfull \hbox (1.99988pt too wide) in paragraph at lines 62--64
+\T1/qhv/m/n/10.95 [[], []] In the con-text of land-slide risk man-
+ []
+
+
+
+[5]
+
+LaTeX Warning: Citation 'noauthor_citizen_2025' on page 6 undefined on input li
+ne 82.
+
+
+Overfull \hbox (38.93843pt too wide) in paragraph at lines 82--83
+\T1/qhv/m/n/10.95 point-ers and cor-rupted files that might even spread to othe
+r de-vices. [[]] 
+ []
+
+
+
+[6]
 chapter 3.
-
-
-[5
-
-]
-chapter 4.
-
-
-[6
-
-]
-chapter 5.
 
 
 [7
 
 ]
-chapter 6.
+chapter 4.
 
 
 [8
 
 ]
-chapter 7.
+chapter 5.
 
 
 [9
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 62--62
-
- []
-
+chapter 6.
 
 
 [10
 
 ]
+chapter 7.
 
-LaTeX Warning: Empty bibliography on input line 64.
+
+[11
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 112--112
+
+ []
+
+
+
+[12
+
+]
+
+LaTeX Warning: Empty bibliography on input line 114.
 
 (./main.aux)
  ***********
@@ -1245,19 +1286,19 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 30421 strings out of 469626
- 663738 string characters out of 5475183
- 1983531 words of memory out of 5000000
- 56826 multiletter control sequences out of 15000+600000
+ 30622 strings out of 469626
+ 668167 string characters out of 5475183
+ 1983835 words of memory out of 5000000
+ 57027 multiletter control sequences out of 15000+600000
  649064 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  154i,19n,149p,38246b,2016s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2025/texmf-dist/fonts/type1/public/tex-gyre/qhvb.pfb><c:/texlive/
 2025/texmf-dist/fonts/type1/public/tex-gyre/qhvr.pfb>
-Output written on main.pdf (10 pages, 160422 bytes).
+Output written on main.pdf (12 pages, 171105 bytes).
 PDF statistics:
- 54 PDF objects out of 1000 (max. 8388607)
- 35 compressed objects within 1 object stream
+ 60 PDF objects out of 1000 (max. 8388607)
+ 39 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 
