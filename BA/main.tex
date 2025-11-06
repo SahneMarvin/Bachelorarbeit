@@ -1,0 +1,288 @@
+\documentclass{tubaf-thesis}
+\usepackage[sans]{tubaf-fonts}
+\usepackage[english]{babel}
+\usepackage{tubaf-title}
+\usepackage{tubaf-marks}
+\usepackage{tabularray}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{subfig}
+\UseTblrLibrary{booktabs}
+
+\definecolor{vartype}{HTML}{569cd6}
+\definecolor{numbers}{HTML}{b5cea8}
+        
+\lstset{
+    frame=tb,
+    language={[Sharp]C},
+    columns=flexible,
+    basicstyle={\scriptsize\ttfamily\bfseries},
+    numbers=none,
+    numberstyle=\color{numbers},
+    keywordstyle=\color{vartype}
+}
+
+\begin{document}
+	
+    \title{Design and Development of a Mobile Application for Citizen Science-Based Landslide Observation and Data Collection}
+    \author{Marvin Menzel}
+    \date{20. October 2025}
+
+    \supervisors{Prof. Dr. Sebastian Zug \and Dr. Cornelia Kitzig (G.E.O.S. Ingenieurgesellschaft mbH)}
+    \examiners{Prof. Dr. Sebastian Zug \and Dr. Cornelia Kitzig (G.E.O.S. Ingenieurgesellschaft mbH)}
+    \course{Applied Computer Science}
+    \faculty{Faculty of Mathematics and Computer Science}
+    \attaineddegree[B. Sc.]{Bachelor of Science}
+    
+    \maketitle
+
+    \chapter*{Abstract}
+    Landslides are a recurring hazard in Nepal, especially during the monsoon season, when heavy rainfall often triggers slope failures. Optical satellite data, such as from Sentinel-2, is useful for mapping past landslides but cannot provide reliable information during periods of dense cloud cover. This creates a major gap in event documentation, which limits the development of predictive models. As part of a collaborative project between G.E.O.S. Ingenieurgesellschaft mbH (GEOS) in Germany and the Department of Mines and Geology (DMG) in Nepal, co-financed by DEG Impulse gGmbH through the develoPPP program of the German Federal Ministry for Economic Cooperation and Development (BMZ), this thesis explores a citizen science approach to improve the availability of landslide observations. The result is a cross-platform mobile application that allows users to record landslide events with geo-tagged photos and basic metadata. The app, developed in .NET MAUI using the Model-View-ViewModel (MVVM) pattern, works fully offline and automatically synchronizes data when a connection becomes available. It also provides map visualization and ensures data integrity and privacy according to Nepalese regulations. The prototype shows how citizen participation and modern mobile tools can complement remote sensing and support better landslide monitoring and risk assessment.
+
+
+    \tableofcontents
+    
+    \chapter{Introduction}
+
+    \section{Motivation}
+    Nepal experiences severe monsoon-triggered floods and landslides that cause major loss of life and infrastructure each year. During 26 to 28 September 2024, record-breaking rainfall led to more than 200 fatalities throughout the country, underscoring the need for timely situational awareness and improved risk forecasting \cite{petley_26_2024}.
+    This bachelor thesis is part of a joint project between G.E.O.S. Ingenieurgesellschaft mbH (GEOS) in Germany and the Department of Mines and Geology (DMG) in Nepal, which is co-financed by DEG Impulse gGmbH with funds from the develoPPP program of the German Federal Ministry for Economic Cooperation and Development (BMZ). The project aims to improve the monitoring and prediction of landslides in Nepal through remote sensing and data-driven modeling. Its first component focuses on detecting historical landslides from Sentinel-2 satellite images, helping to build a comprehensive database of past events. However, this method cannot capture most landslides during the monsoon season due to dense cloud cover. This limits the availability of precisely labeled events for model training and validation. Radar imagery, such as Sentinel-1, can help infer event timing in some cases, but it does not eliminate the need for ground observations that provide immediate, verifiable reports and context \cite{singh_cloud_2025}. The second component develops a machine learning model that combines static geodata, such as slope, geology, and land use, with dynamic rainfall forecasts to predict the probability of landslides. Citizen science offers a practical way to close this data gap.
+    Existing efforts, such as NASA’s global Landslide Reporter/COOLR platform and Nepal-specific community systems such as Pahiro Alert, demonstrate the technical feasibility of participatory landslide reporting \cite{juang_using_2019}. However, these tools are still not sufficiently adapted for large-scale deployment, particularly with regard to offline functionality, multilingual accessibility, and seamless integration with Nepal’s national disaster information infrastructure (NDRRMA/BIPAD). The citizen science application developed in this thesis will contribute to the project by providing timely, ground-based landslide observations that complement satellite and model data.
+    
+	\section{Citizen Science}
+    Citizen science is, as Prof. M. Hakley \cite{haklay_neogeography_2013,haklay_what_2021} said, 'Scientific knowledge cogeneration by members of the general public, in collaboration with professional scientists and scientific institutions' or, by definition of the Oxford dictionary \cite{oxford_citizen_2025}, 'scientific work, for example collecting information, that is done by ordinary people without special qualifications, in order to help the work of scientists'.
+    
+    In the context of landslide risk management, locals can act as 'human sensors', providing valuable on-the-ground observations and reports. However, this approach also faces significant challenges, including low accuracy of the volunteered data, language barriers, and inconsistencies in reporting. To be effective, contributions should ideally capture essential details such as date, time, location, and the potential trigger of the event. 
+    
+    A comprehensive strategy to reduce the risk of disasters requires addressing several interconnected requirements. These include a thorough study of landslide risk assessments, integrating findings into planning of land use and zoning regulations, and developing appropriate building codes and standards. In addition, early warning systems, education and awareness programs, as well as community involvement through citizen science initiatives, are vital components for increasing resilience and preparedness. The management of landslides can be structured into three stages: before the event, during the event, and after the event. 
+    
+    In the pre-landslide stage, preventive measures such as planting vegetation, directing surface runoff, or installing flexible pipes can significantly reduce the risk of landslides. Preparation activities are also crucial, including the establishment of emergency plans, for example, using mobile applications, the assembly of survival kits with essential items such as documents, medications, clothes, food, and maps, and the use of digital tools such as the application created in the course of this thesis. 
+    
+    During a landslide event, priority should be given to evacuating all community members to safe ground or nearby relief camps, with particular attention to vulnerable groups such as pregnant women, children, and the elderly. 
+    
+    In the post-event stage, damage assessments play a central role in guiding rehabilitation and recovery processes. Despite these measures, several challenges hinder effective landslide risk management. These include a general unwillingness to relocate, inefficient transfer or even loss of indigenous knowledge, limited perception of risk among affected populations, and security issues in relief camps. In addition, resource and expertise constraints, as well as data availability and quality issues, further complicate both scientific and community-driven efforts. However, the potential of citizen science in this field continues to grow, particularly with the increasing penetration of Internet access and mobile technologies. Using this potential, disaster risk management can become more inclusive, collaborative, and adaptive to local contexts \cite{ramesh_community_2023}.
+	
+    \chapter{Background and Related Work}
+    	\section{Mobile Data Collection Applications}
+        
+        Collecting ground-based data through mobile or web-based applications has become an increasingly important complement to satellite imagery and modeled hazard predictions. Such systems allow for direct observations of landslide events, often capturing details and local circumstances that remote sensing or global models cannot resolve. They are particularly valuable in regions where terrain, vegetation cover, and temporal variability make satellite detection difficult, or where official reporting is delayed or incomplete. Among such tools, NASA’s \textit{Landslide Reporter} and its supporting database \textit{COOLR} represent prominent examples of citizen science approaches for gathering landslide data worldwide.
+
+        NASA’s \textit{Landslide Reporter} is a citizen science web/mobile portal that enables users to submit observations of landslides, from personal field observations, media or news reports, or other sources, providing information such as date and time, geographic location, trigger, damage, and optional photos or links. Once submitted, reports are reviewed by NASA scientists before inclusion in the \textit{Cooperative Open Online Landslide Repository} (COOLR). COOLR aggregates these citizen contributions alongside NASA’s Global Landslide Catalog and other inventories, offering a visualization tool (Landslide Viewer) and open access for researchers to download and use \cite{nasa_reporter_2025}.
+
+        While such applications bring many strengths, they also exhibit limitations when applied in specific contexts such as Nepal. The location of reports may be coarse, particularly when derived from news articles or second-hand sources, leading to spatial uncertainty. NASA’s guides acknowledge that while precise coordinates are ideal, many reports only give approximate location, such as county, town or landmarks, with large uncertain radii \cite{nasa_faq_nodate}. However, for the training of landslide detecting, deep learning models, it is necessary to have timely, ground-based landslide observations that complement satellite and model data.
+        
+    	The success of deep learning systems is highly dependent on the quality and preparation of training data. 80 to 90\% of the time spent in machine learning development is estimated to be devoted to data preparation, underscoring the importance of this stage in the pipeline. Even the most sophisticated algorithms cannot yield reliable results without high-quality datasets. In fact, the accuracy and generalizability of the models are strongly constrained by the quality, consistency, and representativeness of the data they are trained on. Consequently, challenges in data collection, such as incomplete coverage, noise, or sampling bias, directly translate into reduced model performance. Therefore, high-quality data preparation and validation processes are indispensable to fully exploit the potential of deep learning methods in ecological research and public health applications \cite{whang_data_2020}.
+
+        \section{Existing Applications}
+        Several mobile applications have been developed to address hazards from landslides through community engagement and real-time reporting. These tools illustrate the potential of digital platforms for disaster management by enabling data collection, rapid communication, and situational awareness in regions prone to landslides. 
+
+        The Landslide Tracker app, developed by Amrita Vishwa Vidyapeetham (AVV), a private university in India, is a crowdsourced platform that allows users to report landslide and rainfall events in real time. Users can upload geo-tagged information, images, and descriptions, which are then accessible through a map and list interface. This tool facilitates situational awareness and supports research efforts in landslide-prone areas. Its main limitation is its reliance on user participation, which can affect data accuracy and coverage \cite{guntha_crowdsourced_2025}.
+
+        AmritaKripa, also developed by AVV, focuses on connecting disaster survivors with relief teams during inland flooding events. The app enables users to report urgent needs, such as food, shelter, or medical support, allowing volunteers and non-governmental organizations (NGOs) to respond quickly. It was instrumental in helping more than 400,000 people during the 2018 to 2019 floods in Kerala, India \cite{thirugnanam_review_2022}. However, its use is limited to areas affected by specific disaster events and depends on local adoption and infrastructure \cite{guntha_crowdsourced_2025}.
+
+        The Pahiro Alert app is a community-based landslide early warning system currently being piloted in Narharinath Rural Municipality, Kalikot, Nepal. Pahiro Alert integrates high-resolution rainfall and susceptibility data with household-level vulnerability assessments to deliver customized warnings, risk visualizations, and early action guidance that consider exposure, gender, age, caste, and other demographic factors \cite{noauthor_pahiro_nodate}.
+        
+        Although these applications provide valuable information, their functionalities are often tailored to specific regions or functionalities, leaving opportunities for new solutions that can integrate broader datasets, expand accessibility, or address unique challenges in other contexts. The present study builds upon these existing approaches while introducing features designed to complement and expand the reach of current systems.
+
+        \section{Landslide Overview}
+        Landslides in Nepal result from a complex interaction of demographic pressure, rapid changes in land use and land cover, and substantial rainfall associated with the monsoon season, as shown in Figure \ref{fig:climate}, demonstrating the significant difference in rainfall patterns and amount between Nepal and Germany. Together, these factors drive a nationwide (Figure \ref{fig:map}) increase in both the frequency and severity of landslide events. The human death toll is particularly pronounced, with fatalities increasing proportionally to anthropogenic stress on vulnerable slopes, especially during periods of extreme precipitation. Consequently, systematic recording, monitoring, and analysis of landslide occurrences are vital for the development of robust and predictive models. This need is particularly acute in South Asia, where the intense summer monsoon exerts a profound influence on slope stability and hazard occurrence.
+
+        \begin{figure}
+            \centering
+            \frame{\includegraphics[width=0.75\linewidth]{images/pokhara-nepal.png}}
+
+            \vspace{1cm}
+            
+            \frame{\includegraphics[width=0.75\linewidth]{images/berlin-germany.png}}
+
+            \vspace{0.5cm}
+            
+            \caption{Climate Charts: Precipitation of Pokhara - Nepal \cite{noauthor_nepal_nodate} in Comparison to Berlin - Germany \cite{noauthor_berlin_nodate}}
+            \label{fig:climate}
+        \end{figure}
+
+        \begin{figure}
+            \centering
+            \frame{\includegraphics[width=0.75\linewidth]{images/Landslide-distribution-in-Nepal.jpg}}            
+            \caption{'Landslide distribution in Nepal. This map was preparedusing more than 677 landslide events [from 1951 to 2006]. The map does not represent total landslides events in Nepal. [sic]' \cite{noauthor_pdf_2025}}
+            \label{fig:map}
+        \end{figure}
+        
+        Globally, the majority of fatal non-seismic landslides are caused by natural factors (84.5\%), with anthropogenic causes (originating in human activity) accounting for a smaller but still significant 15.5\%. The concentration of landslides and associated fatalities is highest in tropical and temperate regions, accounting for 94\% of all recorded events. Interestingly, the spatial distribution of triggers for landslides varies: anthropogenic landslides show a concentration that is approximately 20\% higher in the plains, while natural causes are more prevalent in low to middle mountain ranges. In addition, the mortality rate (average number of fatalities per landslide) is lower for naturally triggered landslides as well as for landslides in tropical and temperate regions. 
+    
+        It is also worth noting that landslides resulting in numerous deaths are relatively rare. Looking ahead, climate change is projected to further worsen the landslide problem, leading to an expected increase in events. Although many landslides are naturally triggered, anthropogenic factors, such as reduced hill stability due to an increase in deforestation and infrastructure, can significantly influence their occurrence and impact. Generally, natural landslides tend to occur at higher elevations, while those with anthropogenic causes are more common at lower elevations \cite{fidan_understanding_2024}.        
+
+        \newpage
+    	\section{Technical Overview and Considerations}
+    	
+    	A critical determinant for the effectiveness of this project lies in the reliable synchronization of the collected data. Given Nepal’s status as a developing and predominantly mountainous country, stable network connectivity cannot be consistently guaranteed. Consequently, it is essential to establish a robust mechanism for local data storage, complemented by a secure and fault-tolerant synchronization system that ensures data reliability, consistency, and efficiency.
+
+        Common sources of failure include connection loss, application crashes, and power outages. Such disruptions can result in the generation of duplicate instances, orphaned references, or corrupted data files, which in turn may propagate inconsistencies across connected devices or databases \cite{go_reliable_2015}.
+        
+    \chapter{Requirements and System Specifications}
+        This section defines and discusses the hardware and software requirements for a citizen science application designed to record and report landslides. These requirements are categorized as functional and non-functional, as recommended by standard software engineering practices. 
+
+        \section{Exchange with Nepalese stakeholder}
+        To better understand the local context and technological conditions relevant for the design of a community-based landslide reporting system, an informal exchange was conducted with a Nepalese contact involved in this project. The conversation provided valuable insights into mobile usage patterns, connectivity, and perceptions of new digital tools within Nepal.
+
+        According to the respondent, both major mobile operating systems, Android and iOS, are present in Nepal. However, Android dominates the market, with approximately 70\% of users relying on Android devices, while iOS accounts for around 15\%. The remaining 15\% of users use alternative systems, such as those used by Xiaomi or Huawei. Almost every member of the household owns a smartphone, with about 90\% of the population using these devices and only 10\% relying on basic mobile phones. The number of phones per household varies depending on the size of the household, typically ranging from two to eight devices.
+
+        Mobile data availability differs according to individual subscription plans, spanning from as little as 1 GB per month to as much as 100 GB. Network reliability is generally good, though occasional service interruptions occur, particularly during power outages caused by landslides, floods, or other natural disasters. In general, such disruptions are estimated to affect connectivity roughly 5\% of the time. The coverage of the national mobile network currently extends to approximately 85\% of the country, with weak or absent signals primarily in the Himalayan and high mountain regions, where the population density is low.
+
+        The respondent noted that while there are several mobile-based early warning systems, particularly those focused on flood forecasting and alerts distributed through cellular networks, no comparable applications dedicated specifically to landslide monitoring or reporting are currently in use. However, he expressed optimism regarding public acceptance of such a system, suggesting that adoption would increase over time if accompanied by awareness-raising initiatives highlighting the usefulness of the app and its potential to enhance personal and community safety.        
+
+        \section{Functional Requirements}
+        Functional requirements describe the essential features, capabilities, and actions that the system must perform in order to fulfill its intended purpose. They specify what the system should do, for example, the ability to collect, store or synchronize landslide data, and thus define the core functionality that directly contributes to the objectives of the system.
+
+            \subsection{Data Acquisition and Sensor Integration}
+            A primary functional requirement of the application is the ability to collect accurate and comprehensive landslide-related data. This is achieved through the integration of multiple sensors available on modern smartphones, such as the camera for visual documentation, the Global Positioning System (GPS) or Global Navigation Satellite System (GNSS) modules for geolocation, and the digital compass for determining orientations. These sensors must operate in synchronization to guarantee spatial and temporal consistency. Therefore, each recorded observation should include metadata containing the precise location, time, and sensor configuration.
+
+            \subsection{Data Storage, Offline Functionality, and Synchronization}
+            The application must implement a robust mechanism to store, manage and synchronize collected data under varying network conditions. Since landslides often occur, either in remote areas where connectivity is limited or entirely unavailable, or in inhabited areas where landslides may destroy crucial infrastructure, the system should ensure full offline functionality. All data, including images, sensor readings, and metadata, should be temporarily cached in secure local storage to prevent loss and allow uninterrupted operation. 
+
+            To maintain data integrity and traceability, metadata such as location, time, and sensor configuration may be embedded directly into image EXIF fields or managed through a structured local database. Once network connectivity is re-established, the application should automatically detect the available connection and synchronize all locally stored data with a central database or cloud storage service. This synchronization process should occur intelligently, either at predefined intervals or through user-defined triggers, to balance energy efficiency, data accuracy, and bandwidth conservation.
+            
+            \subsection{User Interaction and Reporting}
+            In terms of user interaction and reporting, the interface must provide a simple and structured workflow that allows users to submit photographs, descriptions, and contextual information such as time of occurrence, damage observations, and weather conditions. Additionally, previously recorded entries should be displayed on a map interface to facilitate spatial awareness and data validation.
+
+        \section{Non-Functional Requirements}
+        Non-functional requirements define the quality attributes that determine how well these functions are executed. They address aspects such as performance, usability, reliability, scalability, and security, ensuring that the system not only meets its functional goals, but also operates efficiently and provides a positive user experience under real-world conditions.
+
+            \subsection{Performance and Energy Efficiency}
+            Non-functional performance criteria include responsiveness, low latency, and energy-efficient operation. Since the power supply may be limited, the app must minimize unnecessary background processes such as constant GPS tracking or continuous data synchronization. Adaptive sampling strategies or event-triggered data collection can further optimize energy consumption.
+
+            \subsection{Portability and Cross-Platform Compatibility}
+            The application should be compatible with multiple mobile operating systems, such as Android, iOS or HarmonyOS, to reach a broad user base. To reduce development and maintenance efforts, cross-platform frameworks such as Flutter, .NET MAUI, or React Native can be used. This requirement emphasizes software maintainability and scalability, ensuring long-term project sustainability even as technology evolves.
+
+            \subsection{Usability and User Experience}
+            Usability represents a key attribute for citizen science initiatives, where participants often have varied technical expertise. The interface should be intuitive and visually appealing, enabling users to complete reporting tasks quickly and accurately. The principles of human-computer interaction (HCI) and user-centered design (UCD) should guide development, focusing on clarity, feedback, and accessibility. Although the number of English-speaking Nepalese has increased steadily, the majority of the population still lacks proficiency in speaking or reading English. The prevalence of English language skills varies considerably depending on factors such as environment, age, and educational background \cite{sharma_english_2022}. Consequently, English proficiency levels across the population remain highly uneven \cite{booe_how_nodate}. This linguistic diversity underscores the importance of developing multilingual application to ensure accessibility and inclusion for all users in Nepal.
+
+            \subsection{Reliability and Data Integrity}
+            Given the scientific purpose of the collected data, the reliability and accuracy of the data are critical. Each record should be verified through sensor calibration, timestamp synchronization, using UTC or NTP standards, and validation checks to prevent duplicate or corrupted entries. The system must be robust against sudden shutdowns or network interruptions, employing mechanisms such as local backups and atomic transactions during synchronization.    
+    
+    \chapter{Mobile App Design and Implementation}
+        \section{Overview}        
+        Mobile data acquisition has become an essential approach to environmental monitoring, enabling non-professional volunteers to contribute valuable data to scientific research. The 'Citizen Science' application, developed with .NET MAUI and targeting .NET 9, is a modern mobile solution designed to facilitate the documentation of landslide events. This analysis provides a comprehensive overview of the architecture of the app, its core and auxiliary functionalities, and the technical strategies used to ensure reliability, usability, and extensibility.
+        The application is created using the Model-View-ViewModel (MVVM) pattern, a widely adopted design paradigm in modern cross-platform development. This pattern separates the user interface (View), the business and presentation logic (ViewModel), and the data models (Model), resulting in a scalable, modular code base that is easy to maintain. The use of .NET MAUI as the underlying framework allows the app to run natively on Android, iOS, Windows, and macOS, leveraging device-specific features while maintaining a unified code base.
+        
+        \section{User Interaction and Data Acquisition}
+        As seen in Figures \ref{fig:flowchart} and \ref{fig:app}, when a landslide event is observed, the user initiates the data collection process by launching the citizen science application. Upon startup, the application verifies whether the preference storage contains unsynchronized data from previous sessions. If such data exist, they are retrieved and will be available for saving to local SQLite database, whereas an empty storage prompts the initiation of a new data acquisition cycle. The user then determines their current geographical position and captures an image of the landslide. Subsequently, the application embeds the corresponding spatial coordinates and timestamp into the EXIF metadata of the image to ensure the integrity and traceability of the observation. The collected data is then buffered into the preference storage to prevent data loss and are later committed to the local database. Once a network connection becomes available, the application transmits the locally stored records to the central server and clears the preference storage, thereby completing the data submission process.
+        
+        \begin{figure}
+            \centering
+            \includegraphics[width=1\linewidth]{images/app_flowchart.jpg}
+            \caption{Process of Logging a Landslide}
+            \label{fig:flowchart}
+        \end{figure}            
+
+        \begin{figure}
+            \centering
+            \subfloat[\centering New Landslide Form]{{\includegraphics[width=6cm]{images/Screenshot_1759663520.png}}}
+            \qquad
+            \subfloat[\centering Landslide Map]{{\includegraphics[width=6cm]{images/Screenshot_1759663559.png}}}
+            \caption{Visualization of the Application}
+            \label{fig:app}
+        \end{figure}
+
+        % \newpage
+        
+        The primary function of the app is to enable users to record landslide events in the field. The user interface, defined in XAML files such as \textit{NewLandslide.xaml}, presents a structured form where users can perform several key actions. These include capturing a photograph of the landslide, recording the precise geographic location, selecting the date of the event, and saving the observation for later analysis or upload.
+        When the user chooses to take a photo, the app invokes the camera of the device through the \textit{MediaPicker API}. The resulting image is not only stored in the app’s private data directory for security and privacy, but is also processed to embed the current GPS coordinates into its EXIF metadata. This is accomplished by the \textit{WriteGeoDataToExif} method in the \textit{NewLandslideViewModel.cs}, which uses the \textit{ExifLibNet} library to write latitude and longitude information directly into the image file. This ensures that every photo is georeferenced, providing critical context for scientific analysis and future validation.
+
+        One of the most important functions is the function \textit{ToRational}, seen in Figure \ref{fig:toRational}, that is responsible for converting the geographical coordinate represented as a decimal degree value into a rational triplet format compatible with the EXIF metadata standard. The method first separates the absolute coordinate into its degrees, minutes, and seconds components by successively applying floor and modulo operations. The value of seconds is scaled to milliseconds to preserve precision before being converted back to a floating-point representation. The resulting array of three floating point numbers, degrees, minutes, and seconds, is structured in a format that can be directly embedded in EXIF-compliant metadata fields for geolocation tagging.
+        
+        \begin{figure}[b]
+            \centering
+
+            \begin{lstlisting}
+private static float[] ToRational(double coordinate) {
+    var deg = (uint)Math.Floor(Math.Abs(coordinate));
+    var min = (uint)Math.Floor((Math.Abs(coordinate) - deg) * 60);
+    var sec = (uint)((Math.Abs(coordinate) - deg - min / 60.0) * 3600 * 1000);
+    return [
+        (float) deg,
+        (float) min,
+        (float) sec/1000f
+    ];
+}
+            \end{lstlisting}
+        
+            \caption{Preparation of Location for EXIF Data}
+            \label{fig:toRational}
+        \end{figure}        
+
+        
+        The app also allows users to independently acquire their current location using the device’s geolocation services. By pressing the 'Get Location' button, the app requests the current latitude and longitude of the device, which are then displayed in the interface and stored for later use. The date of the observation can be set using a date picker, allowing users to document events that may have occurred in the recent past.
+        To prevent data loss in the event of unexpected interruptions, such as the app being closed or the device losing power, the app temporarily saves all user inputs in the device’s preferences storage. The \textit{LoadStateFromPreferences} method in the ViewModel is responsible for restoring this state when the user returns to the form, ensuring a seamless and frustration-free user experience.
+        
+        \section{Data Persistence and Offline Functionality}        
+        A distinguishing feature of the application is its robust offline capability. All data collected is stored locally in a \textit{SQLite} database, accessed through a dedicated service layer. Each observation is represented as an \textit{OfflineData} object which encapsulates the path of the image, geographic coordinates, observation date and a timestamp indicating when the entry was created. This local-first approach is essential for fieldwork, where network connectivity is often unreliable or unavailable.
+        The app data model is designed to track the synchronization status of each entry. Observations are initially marked as unsent, and only after successful upload to a remote server, they are flagged as sent. This mechanism ensures that no data is lost or duplicated during the synchronization process.
+        
+        \section{Visualization and Spatial Analysis}        
+        Beyond data collection, the app provides a visualization feature that allows users to view all recorded landslide events on an interactive map. The \textit{Map} page, implemented using the \textit{Mapsui} library, displays an OpenStreetMap background and overlays points corresponding to each observation stored in the database. Transformation of geographical coordinates into the map projection system is handled programmatically, ensuring accurate spatial representation.
+        This mapping functionality serves multiple purposes. Provides immediate feedback to users, allowing them to verify that their observations have been correctly recorded and geolocated. It also supports spatial analysis by revealing patterns in the distribution of landslide events, which can inform both scientific research and practical decision-making.
+        
+        \section{Synchronization and Data Integrity}        
+        Synchronization with a remote server is a critical aspect of the design of the app. The ViewModel monitors the device’s network connectivity using the \textit{IConnectivity} interface. When an Internet connection becomes available, the app automatically initiates the upload of all unsent observations. The synchronization process is implemented asynchronously and is protected by locking mechanisms to prevent concurrent uploads, which could lead to data corruption or duplication.
+        The upload logic is encapsulated in the \textit{SynchronizeDataAsync} and \textit{TriggerSyncAsync} methods. After each successful upload, the corresponding entry in the local database is marked as sent. This ensures a clear and auditable record of the data has been transmitted and which remains pending. The Upload will be handled by sending a POST request to a server that runs a php-based script. This script then stores the data in a database for future use and analysis. The app architecture allows for future integration of more sophisticated synchronization strategies, such as conflict resolution or partial uploads.
+        
+        \section{Validation, Challenges and Solutions}
+        Developing a cross-platform citizen science app presents several technical challenges. Accessing device-specific features, such as camera and geolocation, requires careful handling of permissions and platform differences. .NET MAUI abstracts many of these complexities, but the app’s codebase still includes error handling and fallback mechanisms to ensure reliability across all supported platforms.
+        
+        Offline capability is another significant challenge. The use of local storage by the app, combined with temporary state preservation in preferences, ensures that data is never lost, even under adverse conditions. The synchronization logic is designed to be robust against intermittent connectivity, automatically resuming uploads when possible.
+        Data integrity is further enhanced by embedding geolocation data directly into image files and by maintaining a clear separation between unsent and sent data in the database. This approach supports both scientific rigor and user trust.
+
+        During the development process, it was observed that the data was being reset whenever the page was changed or the application was restarted. This behavior indicated that the data was not being stored successfully or persistently within the system. To resolve this issue, the data will be automatically saved in the app preferences from where it will be read on page change or restart of the app.
+
+        In addition, integration with Google Maps required the use of an API key, which incurs additional costs. With that, there would be the need to include sources of revenue such as advertisements or subscription. As a project to help the people of Nepal, it was therefore decided to migrate to OpenStreetMap, an open source and cost-free alternative. 
+
+        At an early stage of the development process, location data could not be stored within the EXIF metadata of images. This issue was due to the data being in the wrong format. This was resolved by converting the location information into the correct format, that being \textit{Degrees Minutes Seconds}, enabling a successful integration of the geolocation data into the image metadata, as seen in Figure \ref{fig:toRational}.     
+        
+        \section{Testing, Deployment and Maintenance}
+        During the development process, the application was continuously reviewed and tested by the GEOS team in several iterative cycles. Their practical experience and domain knowledge provided valuable insight into both technical and usability aspects of the system. Through repeated evaluations, the team identified a variety of issues, including performance bottlenecks, inconsistencies in data synchronization, and challenges in the user interface. Each round of testing led to targeted improvements, such as optimizing sensor data handling, refining the layout of input forms, and improving overall application stability. This collaborative and iterative approach ensured that the application evolved based on real-world feedback rather than purely theoretical assumptions. As a result, the final prototype achieved a higher degree of reliability, usability, and alignment with the intended functional requirements, demonstrating the effectiveness of continuous stakeholder involvement in the software development process.
+
+        Deploying and maintaining a mobile application in different app stores, such as Google Play Store and the Apple App Store, involves several coordinated steps to ensure accessibility, reliability, and compliance. The deployment process typically includes compiling the final build, digitally signing it, and submitting it to each store’s review system, where the app is evaluated for functionality, security, and adherence to platform-specific guidelines. Although initial setup and compliance can be time-consuming, ongoing maintenance, such as releasing updates, addressing bugs, and ensuring compatibility with new operating system versions, is relatively straightforward once a release workflow is established. Costs vary depending on the platform, and developer registration fees and influence long-term sustainability. From a data security perspective, stores enforce encryption, permissions management, and privacy policies, which contribute to safeguarding user data, but also impose strict requirements on developers to ensure secure data handling and transparent communication practices. In general, the process balances accessibility and user trust with administrative and financial overhead.
+        
+
+    \chapter{Discussion and Conclusion}
+
+    \section{Discussion}
+    
+        \subsection{Ethical and Data Privacy Considerations}
+        
+        When developing and deploying a citizen science application in Nepal, ethical and data privacy considerations are of critical importance. The legal framework of Nepal provides the foundation for personal data protection through the \textit{Privacy Act, 2075 (2018)}, also known as the Individual Privacy Act, and the Constitution of Nepal (2015), which guarantees the right to privacy under Article 28. These legal instruments ensure that individuals have the right to confidentiality of their personal information, correspondence, and communication. However, the implementation of data protection in practice remains limited, as Nepal currently lacks a centralized data protection authority and consistent enforcement mechanisms \cite{noauthor_data_2025,noauthor_nepals_2020,intelligence_understanding_2024}. Consequently, many citizens are not fully aware of their rights concerning personal data management or the procedures for requesting data deletion or correction.
+        
+        In addition to legal obligations, ethical considerations extend to cultural and contextual aspects of Nepalese society. The country’s cultural diversity and sensitivity to social categories such as caste, ethnicity, and religion require particular care in data collection and management. The app must therefore be designed to respect not only privacy laws, but also local social norms. For example, when capturing photographs of landslide sites, users may inadvertently include private property or culturally significant areas. To address this, the application should include clear guidelines reminding users to obtain consent before photographing people, homes, or culturally sensitive landmarks.
+        
+        From a technical and ethical standpoint, the design of the app follows the principles of informed consent, minimal data collection, and anonymization. Users should be explicitly informed about the data that is collected, such as images, GPS coordinates, and sensor readings, and how these data will be used, stored, and shared. Only information necessary for scientific and monitoring purposes is collected, while personally identifiable data are excluded or pseudonymized whenever possible. Furthermore, the application ensures data security by employing encryption both during transmission and storage, and by using secure, standards-compliant cloud storage systems for synchronization. These measures align with the intent of Nepal’s privacy legislation and with international ethical standards for research involving human participants.
+        
+        Beyond data protection, the project also considered ethical strategies to promote sustainable community engagement. One such idea involves the integration of a potential \textit{user management and reward system}. This system would allow users to register within the app and track their individual contributions over time. As users submit verified observations, they could receive digital badges, progress levels, or achievement indicators as recognition of their participation. These rewards would not involve any monetary or material compensation, but would serve as motivational elements to increase user enthusiasm, engagement, and a sense of contribution to a collective scientific effort. Similar gamification strategies have been shown in previous citizen science research to improve long-term participation and data quality by reinforcing positive user behavior through intrinsic motivation \cite{kc_can_2025}.
+        
+        By integrating these ethical principles, respect for privacy, informed consent, cultural sensitivity, transparency, and community motivation, the project aims to create a responsible, inclusive, and trustworthy citizen science environment in Nepal. These considerations not only protect individuals but also strengthen the reliability and social acceptance of the collected scientific data.
+        
+        \subsection{Future Work}
+        
+        The modular architecture of the application, which follows the Model-View-ViewModel (MVVM) pattern combined with service abstraction, provides a strong foundation for future development and scalability. This structure enables the seamless integration of new components without disrupting existing functionality, which is particularly important for long-term research-oriented applications. Future work could focus on several complementary directions that extend both functionality and impact.
+        
+        One major area for improvement is the integration of cloud-based data storage and management systems. Such an integration would allow secure and efficient handling of large datasets, enabling data sharing among researchers, institutions, and local authorities. Another promising direction involves the implementation of advanced analytical tools, including statistical modeling and machine learning algorithms, to identify correlations between environmental variables and landslide occurrences. These analyses could contribute significantly to early warning systems and long-term environmental planning.
+        
+        Further development should also explore the inclusion of additional environmental observation features, such as rainfall measurement, soil moisture monitoring, or vegetation analysis. Expanding the scope of the app would enable more comprehensive environmental modeling and improve the understanding of triggers from landslides. Likewise, improvements in offline functionality and synchronization could enhance performance in rural and mountainous areas of Nepal, where network connectivity is often limited. Optimized caching strategies, conflict resolution mechanisms for offline edits, and efficient compression methods for multimedia data would improve usability under field conditions.
+        
+        In addition to technical improvements, future iterations of the app should focus on localization and inclusivity. Translating the interface into major local languages and adapting the design for users with limited digital literacy can significantly increase accessibility and participation. Integrating the proposed user management and reward system could further support community engagement by creating a sense of progress and shared purpose. Moreover, establishing collaborations with local schools, NGOs, and government agencies could ensure that the app becomes a sustainable part of Nepal’s broader ecosystem of environmental monitoring.
+    
+    \section{Conclusion}
+    
+    In conclusion, the 'Citizen Science' application demonstrates how modern cross-platform technologies can effectively support participatory environmental monitoring in regions such as Nepal, where terrain complexity and limited infrastructure pose unique challenges. By combining intuitive user interfaces with reliable offline data management, robust synchronization, and spatial visualization features, the app provides a comprehensive and user-friendly solution for landslide documentation.
+    
+    The project not only applies established software engineering principles, such as modular architecture, service abstraction, and the MVVM design pattern, but also adheres to ethical standards that respect privacy, transparency, and cultural sensitivity. These considerations ensure that the application operates responsibly within the legal and social context of  Nepal, as defined by the Privacy Act (2018) and the constitutional right to privacy. In addition, the inclusion of a prospective user management and digital reward system highlights the potential to foster sustained user participation and community engagement through intrinsic motivation rather than financial incentives.
+    
+    Overall, the app serves as a practical example of how citizen science and software engineering can be integrated to address environmental challenges through public participation. With further development, and stakeholder collaboration, it has the potential to evolve into a robust and scalable platform that contributes not only to the monitoring of landslides but also to broader environmental resilience and sustainable data-driven decision making in Nepal and beyond.
+
+
+    \makedeclarationofauthorship[16. October 2025]
+
+    \bibliographystyle{ieeetr}
+    \bibliography{finalebib.bib}
+
+\end{document}
